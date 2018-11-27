@@ -56,7 +56,7 @@ io.on('connection', function(socket){
   });
 });
 
-// When a user posts a message, this is what is emitting the event that the socket connection above is listening for.
+// When a user posts a message, this sends it back out for everyone to hear.
 io.on('connection', function(socket){
   socket.on('chat message', function(msg){
     io.emit('chat message', msg);

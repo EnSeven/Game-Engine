@@ -14,22 +14,23 @@
     </style>
   </head>
   <body>
-    <ul id="messages"></ul>
+    <ul id="messages"></ul>  <!-- Where messages are gathered -->
     <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+      <input id="m" autocomplete="off" /><button>Send</button>  <!-- where new messages are typed -->
     </form>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>  <!-- Pulls in Socket.IO's script.  Make this the first script! -->
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
     $(function () {
-      var socket = io();
-      $('form').submit(function(){
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-        return false;
+      var socket = io();  //  Gives access to Socket.IO code in ./src/app.js
+      $('form').submit(function(){  // When the form is submitted...
+        socket.emit('chat message', $('#m').val());  // a 'chat message' event is emitted and attaches the message
+        $('#m').val('');  // then the message input field is cleared.
+        return false;  // Used to escape the function.  No returns are needed for Socket.IO stuff.
       });
-      socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
+      
+      socket.on('chat message', function(msg){  // When this hears a 'chat message' event...
+        $('#messages').append($('<li>').text(msg)); // append the message to the "messages" <ul> as a new <li>.
       });
     });
   </script>
