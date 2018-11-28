@@ -56,6 +56,25 @@ io.on('connection', function(socket){
   });
 });
 
+let player1 = null;
+let player2 = null;
+io.on('connection', function(socket){
+  socket.on('join', function(user){
+    let players = 0;
+    if(!player1 && !player2) {
+      player1 = user;
+      players++;
+    }
+    else if (player1 && !player2) {
+      player2 = user;
+      players++;
+    }
+    else if (player1 && player2 && players == 2) {
+      io.emit('ready');
+    }
+  });
+});
+
 // When a user posts a message, this sends it back out for everyone to hear.
 io.on('connection', function(socket){
   socket.on('chat message', function(msg){
