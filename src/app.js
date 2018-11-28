@@ -25,7 +25,7 @@ app.get('/', (request, response) => {
 //    Takes POST data and sends to API server
 // });
 // app.post('/login', auth, (request, response) => {
-  //    Takes POST data and sends to API server
+//    Takes POST data and sends to API server
 // });
 
 // serves Socket.IO linked html page, see index.html for examples of Socket-IO client useage.
