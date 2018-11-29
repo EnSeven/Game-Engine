@@ -12,7 +12,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.set('view engine', 'ejs');
-const io = require('socket.io')(3030);
+const server = require('http').createServer(app);
+const io = require('socket.io')(server, {
+  path: '/join',
+  serveClient: true,
+  // below are engine.IO options
+  pingInterval: 10000,
+  pingTimeout: 5000,
+});
 let sockets = [];
 
 
@@ -62,7 +69,7 @@ io.on('connection', (socket) => {
 
 });
 
-console.log('Ready to play on port 3030');
+console.log('Ready to play on port 3000');
 
 
 
