@@ -98,7 +98,7 @@ io.on('connection', function(socket){
 // Start function exported for index.js.  The port to use must be defined in index.js.
 // Listens on `server` and not `app`, otherwise Socket.IO cannot connect.
 const start = (port) => {
-  server.listen(port, () => {
+  app.listen(port, () => {
     console.log('Game Server Listening on port ', port);
   });
 };
