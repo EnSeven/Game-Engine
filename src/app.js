@@ -21,22 +21,22 @@ app.get('/', (request, response) => {
   response.render('site');
 });
 
-// app.post('/signup', (request, response => {
-//    Takes POST data and sends to API server
-// });
-// app.post('/login', auth, (request, response) => {
-//    Takes POST data and sends to API server
-// });
-
 // serves Socket.IO linked html page, see index.html for examples of Socket-IO client useage.
 app.get('/join', (request, response) => {
   response.sendFile(__dirname + '/index.html');
 });
 
+//  Post to API after the game
+app.post(`${process.env.API_URL}/api/v1/singlestat`, (request, response) => {
+  request.body = {'name':'from-engine','win':true};
+  // console.log(response.body);
+  request.send(request.body);
+});
+
 //  --- SOCKET IO ---------------------------------
 
 // Socket.IO requires a connection to a http server instance, so one is created here.  It cannot attach directy to `app`.
-const server = require('http').Server(app);
+// const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 // This uses built-in event emitters for when a user connects or disconnects to a Socket.IO linked resource.
@@ -74,6 +74,7 @@ io.on('connection', function(socket){
     }
   });
 });
+
 
 // When a user posts a message, this sends it back out for everyone to hear.
 io.on('connection', function(socket){
