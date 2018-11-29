@@ -37,7 +37,7 @@ app.post(`${process.env.API_URL}/api/v1/singlestat`, (request, response) => {
 
 // Socket.IO requires a connection to a http server instance, so one is created here.  It cannot attach directy to `app`.
 // const server = require('http').Server(app);
-const io = require('socket.io')(3000);
+const io = require('socket.io')(3030);
 let sockets = [];
 // This uses built-in event emitters for when a user connects or disconnects to a Socket.IO linked resource.
 // Currently this triggers when clients got to the /join route or when they navigate away from the /join route.
@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
 
 });
 
-console.log('Ready to play on port 3000');
+console.log('Ready to play on port 3030');
 
 
 
