@@ -21,7 +21,7 @@ app.set('view engine', 'ejs');
 //   pingTimeout: 5000,
 // });
 const http = require('http').Server(app);
-var io = require(`https://enseven-game-engine.herokuapp.com/:3030/socket.io/sockect.io.js`)(http);
+var io = require(`https://enseven-game-engine.herokuapp.com:3030/socket.io/sockect.io.js`)(http);
 
 http.listen(3030, function(){
   console.log('Socket.IO listening on *:3030');
