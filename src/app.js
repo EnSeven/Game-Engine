@@ -12,13 +12,19 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.set('view engine', 'ejs');
-const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-  path: '/join',
-  serveClient: true,
-  // below are engine.IO options
-  pingInterval: 10000,
-  pingTimeout: 5000,
+// const server = require('http').createServer(app);
+// const io = require('socket.io')(server, {
+//   path: '/join',
+//   serveClient: true,
+//   // below are engine.IO options
+//   pingInterval: 10000,
+//   pingTimeout: 5000,
+// });
+const http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+http.listen(3030, function(){
+  console.log('Socket.IO listening on *:3030');
 });
 let sockets = [];
 
@@ -68,10 +74,6 @@ io.on('connection', (socket) => {
   });
 
 });
-
-console.log('Ready to play on port 3000');
-
-
 
 let player1 = null;
 let player2 = null;
