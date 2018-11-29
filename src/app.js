@@ -37,24 +37,34 @@ app.post(`${process.env.API_URL}/api/v1/singlestat`, (request, response) => {
 
 // Socket.IO requires a connection to a http server instance, so one is created here.  It cannot attach directy to `app`.
 // const server = require('http').Server(app);
-const io = require('socket.io')(server);
-
+const io = require('socket.io')(3000);
+let sockets = [];
 // This uses built-in event emitters for when a user connects or disconnects to a Socket.IO linked resource.
 // Currently this triggers when clients got to the /join route or when they navigate away from the /join route.
 // Simply console logging on connect or disconnect for now, but can be expanded to do other things.
-io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
+// when someone connects to the server (nodemon or node server.js)
+io.on('connection', (socket) => {
+  sockets.push(socket);
+  console.log('sockets', sockets);
+
+  // when someone connects via node client.js
+  socket.on('start', () => {
+    socket.emit('connected', `Player ${socket.id} ready`);
+    console.log(`Player ${socket.id} has joined the game`);
+
   });
+
+  // when someone disconnects via node client.js
+  socket.on('disconnect', () => {
+    socket.removeAllListeners();
+    console.log(`Player ${socket.id} has left the game`);
+  });
+
 });
 
-// This watches for chat messages from the index.html page and console logs them as they come.
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    console.log('message: ' + msg);
-  });
-});
+console.log('Ready to play on port 3000');
+
+
 
 let player1 = null;
 let player2 = null;
