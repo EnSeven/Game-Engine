@@ -9,12 +9,12 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const superagent = require('superagent');
-
+const http = require('http');
 // Setting the view engine to ejs and enabling JSON for POST requests
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.set('view engine', 'ejs');
-// const server = require('http').createServer(app);
+const ioserver = require('http').createServer(8080);
 // const io = require('socket.io')(server, {
 //   path: '/join',
 //   serveClient: true,
@@ -27,7 +27,8 @@ app.set('view engine', 'ejs');
 
 let sockets = [];
 
-const io = require('socket.io')();
+const io = require('socket.io')(ioserver);
+ioserver.listen(8080);
 //  --- ROUTES ------------------------------------
 
 // Renders landing page
