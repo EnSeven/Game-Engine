@@ -9,6 +9,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const superagent = require('superagent');
+
 // Setting the view engine to ejs and enabling JSON for POST requests
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -22,11 +23,21 @@ app.set('view engine', 'ejs');
 //   pingTimeout: 5000,
 // });
 
-const io = require('socket.io')(3030);
+// const io = require('socket.io')(3030);
 
 let sockets = [];
 
+const socketIO = require('socket.io');
 
+
+const PORT = 3030;
+
+
+const server = express()
+  .use((req, res) => res.send('') )
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
+const io = socketIO(server);
 //  --- ROUTES ------------------------------------
 
 // Renders landing page
