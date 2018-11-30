@@ -27,7 +27,7 @@ app.set('view engine', 'ejs');
 
 let sockets = [];
 
-const socketIO = require('socket.io');
+const socketIO = require('socket.io')(80);
 
 const io = socketIO();
 //  --- ROUTES ------------------------------------
