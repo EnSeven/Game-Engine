@@ -33,9 +33,8 @@ const socketIO = require('socket.io');
 
 
 
-const server = express()
-  .use((req, res) => res.send('') )
-  .listen(process.env.PORT, () => console.log(`Listening on ${ process.env.PORT }`));
+const server = express();
+  
 
 const io = socketIO(server);
 //  --- ROUTES ------------------------------------
@@ -71,12 +70,12 @@ app.post('/postdata', (request, response) => {
 // when someone connects to the server (nodemon or node server.js)
 io.on('connection', (socket) => {
   sockets.push(socket);
-
+  
   // when someone connects via node client.js
   socket.on('start', () => {
     socket.emit('connected', `Player ID ${socket.id} connected`);
   });
-
+  
   // when someone disconnects via node client.js
   socket.on('disconnect', () => {
     socket.removeAllListeners();
@@ -123,4 +122,5 @@ const start = (port) => {
   });
 };
 
-module.exports = start;
+server.listen(process.env.PORT, () => console.log(`Listening on ${ process.env.PORT }`));
+// module.exports = start;
