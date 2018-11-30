@@ -30,12 +30,12 @@ let sockets = [];
 const socketIO = require('socket.io');
 
 
-const PORT = 3030;
+
 
 
 const server = express()
   .use((req, res) => res.send('') )
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+  .listen(process.env.PORT, () => console.log(`Listening on ${ process.env.PORT }`));
 
 const io = socketIO(server);
 //  --- ROUTES ------------------------------------
