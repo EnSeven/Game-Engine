@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --verbose --coverage"
+    "test": "jest --verbose --coverage",
+    "start": "node ./src/app.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
     "eslint": "^5.9.0",
     "eslintrc": "^1.0.6",
     "express": "^4.16.4",
+    "keylog.io": "^0.1.5",
     "socket.io": "^2.1.1",
     "superagent": "^4.0.0"
   }
