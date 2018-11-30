@@ -28,7 +28,7 @@ const ioserver = require('http').createServer(8080);
 let sockets = [];
 
 const io = require('socket.io')(ioserver);
-ioserver.listen(8080);
+ioserver.listen(process.env.PORT);
 //  --- ROUTES ------------------------------------
 
 // Renders landing page
