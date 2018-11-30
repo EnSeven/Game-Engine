@@ -29,14 +29,7 @@ let sockets = [];
 
 const socketIO = require('socket.io');
 
-
-
-
-
-const server = express();
-  
-
-const io = socketIO(server);
+const io = socketIO();
 //  --- ROUTES ------------------------------------
 
 // Renders landing page
@@ -122,5 +115,5 @@ const start = (port) => {
   });
 };
 
-server.listen(process.env.PORT, () => console.log(`Listening on ${ process.env.PORT }`));
-// module.exports = start;
+// server.listen(process.env.PORT, () => console.log(`Listening on ${ process.env.PORT }`));
+module.exports = start;
