@@ -27,9 +27,7 @@ app.set('view engine', 'ejs');
 
 let sockets = [];
 
-const socketIO = require('socket.io')(80);
-
-const io = socketIO();
+const io = require('socket.io')(80);
 //  --- ROUTES ------------------------------------
 
 // Renders landing page
