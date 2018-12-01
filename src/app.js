@@ -12,11 +12,12 @@ const superagent = require('superagent');
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.set('view engine', 'ejs');
-const ioserver = require('http').createServer(8080);
+const ioserver = require('http').createServer(3000);
 const io = require('socket.io')(ioserver);
-let socketUsers = [];
+let nonPlayers = [];
 let socketConnections = [];
 ioserver.listen(process.env.PORT);
+let isThereTwoPlayers = false;
 
 //  --- ROUTES ------------------------------------
 
@@ -31,15 +32,8 @@ app.get('/join', (request, response) => {
 });
 
 //  Post to API after the game
-app.post('/postdata', (request, response) => {
-  let user = {'name':'from-engine','win':true};
-  superagent.post(`${process.env.API_URL}/api/v1/singlestat`)
-    .send(user)
-    .then(() => {
-      response.send('made it');
-    });
-  // console.log(response.body);
-});
+
+
 
 
 let player1 = undefined;
@@ -66,22 +60,41 @@ io.sockets.on('connection', (socket) => {
   socket.on('join', (socket) => {
     console.log(`Welcome, ${JSON.parse(socket.req.data).username}!
     auth: ${socket.text}`);
-    if(player1 == undefined) {
-      player1 = JSON.parse(socket.req.data).username;
-
+    let players = 0;
+    if(players < 1) {
+      player1 = socket.req;
       console.log(player1);
+      players++;
     }
-    else if (player2 == undefined) {
-      player2 = JSON.parse(socket.req.data).username;
+    else if (players == 1) {
+      player2 = socket.req;
       console.log(player1, player2);
-    } 
-    if(player1 && player2) {
-      io.emit('ready', JSON.parse(socket.req.data).username);
+      isThereTwoPlayers = true;
+      players++;
+      io.emit('ready', JSON.parse(socket.req));
     }
+    else if (players == 2) {
+      nonPlayers.push(socket.req.data);
+      console.log('spectators: ', nonPlayers);
+      socket.emit('spectate', socket.req);
+    } 
   });
-
-  socket.on('h', (socket) => {
-    socket.emit('win');
+  socket.on('quit', (socket) => {
+    console.log(socket);
+    io.emit('end', JSON.parse(socket.req.data));
+    app.post('/postdata', (request, response) => {
+      let user = {'name':'from-engine','win':true};
+      user.setHeader(`${socket.req.text}`);
+      superagent.post(`${process.env.API_URL}/api/v1/singlestat`)
+        .send(user)
+        .then(() => {
+          response.send('made it');
+        });
+      // console.log(response.body);
+    });
+    player1 = undefined;
+    player2 = undefined;
+    console.log('Game server broadcasting "end"');
   });
 });
 
