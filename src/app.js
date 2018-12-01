@@ -15,19 +15,9 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.set('view engine', 'ejs');
 const ioserver = require('http').createServer(8080);
-// const io = require('socket.io')(server, {
-//   path: '/join',
-//   serveClient: true,
-//   // below are engine.IO options
-//   pingInterval: 10000,
-//   pingTimeout: 5000,
-// });
-
-// const io = require('socket.io')(3030);
-
-let sockets = [];
-
 const io = require('socket.io')(ioserver);
+let socketUsers = [];
+let socketConnections = [];
 ioserver.listen(process.env.PORT);
 //  --- ROUTES ------------------------------------
 
@@ -52,57 +42,44 @@ app.post('/postdata', (request, response) => {
   // console.log(response.body);
 });
 
+
+let player1 = undefined;
+let player2 = undefined;
 //  --- SOCKET IO ---------------------------------
 
-// Socket.IO requires a connection to a http server instance, so one is created here.  It cannot attach directy to `app`.
-// const server = require('http').Server(app);
-// This uses built-in event emitters for when a user connects or disconnects to a Socket.IO linked resource.
-// Currently this triggers when clients got to the /join route or when they navigate away from the /join route.
-// Simply console logging on connect or disconnect for now, but can be expanded to do other things.
-// when someone connects to the server (nodemon or node server.js)
-io.on('connection', (socket) => {
-  sockets.push(socket);
+// This holds all emitters and listeners for Socket.IO
+io.sockets.on('connection', (socket) => {
+  socketConnections.push(socket);
   
-  // when someone connects via node client.js
+  // when someone connects via client.js
   socket.on('start', () => {
     socket.emit('connected', `Player ID ${socket.id} connected`);
   });
   
-  // when someone disconnects via node client.js
+  // when someone disconnects via client.js
   socket.on('disconnect', () => {
     socket.removeAllListeners();
     console.log(`Player ID ${socket.id} has left the game`);
   });
-});
 
-let player1 = null;
-let player2 = null;
-io.on('connection', function(socket){
-  socket.on('join', function(user){
-    console.log(`Welcome, ${JSON.parse(user.req.data).username}!
-    auth: ${user.text}`);
-    let players = 0;
-    if(!player1 && !player2) {
-      player1 = user;
-      players++;
+  // after the connection is confirmed.  Takes a socket and assigns to players 1 and 2, then emits 'ready'
+  socket.on('join', function(socket){
+    console.log(`Welcome, ${JSON.parse(socket.req.data).username}!
+    auth: ${socket.text}`);
+    if(player1 == undefined) {
+      player1 = JSON.parse(socket.req.data).username;
+      console.log(player1);
     }
-    else if (player1 && !player2) {
-      player2 = user;
-      players++;
-    }
-    else if (player1 && player2 && players == 2) {
+    else if (player2 == undefined) {
+      player2 = JSON.parse(socket.req.data).username;
+      console.log(player1, player2);
+    } 
+    if(player1 && player2) {
       io.emit('ready');
     }
   });
 });
 
-
-// When a user posts a message, this sends it back out for everyone to hear.
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-  });
-});
 
 //  --- EXPORTS -----------------------------------
 
@@ -114,5 +91,4 @@ const start = (port) => {
   });
 };
 
-// server.listen(process.env.PORT, () => console.log(`Listening on ${ process.env.PORT }`));
 module.exports = start;
