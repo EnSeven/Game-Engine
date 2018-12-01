@@ -9,8 +9,6 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const superagent = require('superagent');
-const http = require('http');
-// Setting the view engine to ejs and enabling JSON for POST requests
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.set('view engine', 'ejs');
@@ -19,6 +17,7 @@ const io = require('socket.io')(ioserver);
 let socketUsers = [];
 let socketConnections = [];
 ioserver.listen(process.env.PORT);
+
 //  --- ROUTES ------------------------------------
 
 // Renders landing page
@@ -45,6 +44,7 @@ app.post('/postdata', (request, response) => {
 
 let player1 = undefined;
 let player2 = undefined;
+
 //  --- SOCKET IO ---------------------------------
 
 // This holds all emitters and listeners for Socket.IO
@@ -63,11 +63,12 @@ io.sockets.on('connection', (socket) => {
   });
 
   // after the connection is confirmed.  Takes a socket and assigns to players 1 and 2, then emits 'ready'
-  socket.on('join', function(socket){
+  socket.on('join', (socket) => {
     console.log(`Welcome, ${JSON.parse(socket.req.data).username}!
     auth: ${socket.text}`);
     if(player1 == undefined) {
       player1 = JSON.parse(socket.req.data).username;
+
       console.log(player1);
     }
     else if (player2 == undefined) {
@@ -75,11 +76,14 @@ io.sockets.on('connection', (socket) => {
       console.log(player1, player2);
     } 
     if(player1 && player2) {
-      io.emit('ready');
+      io.emit('ready', JSON.parse(socket.req.data).username);
     }
   });
-});
 
+  socket.on('h', (socket) => {
+    socket.emit('win');
+  });
+});
 
 //  --- EXPORTS -----------------------------------
 
