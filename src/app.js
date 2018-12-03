@@ -81,7 +81,6 @@ io.sockets.on('connection', (socket) => {
   //  Runs game related functions from game-engine.js
   // wait for both players before starting
   let playCount = 0;
-  let gameover = false;
   players.on('play', () => {
     playCount++;
     while (playCount < 2) {
@@ -93,8 +92,9 @@ io.sockets.on('connection', (socket) => {
     //  Input is an array of two player objects
     let bothPlayerObjs = [Game.player1, Game.player2];
     Game.playerTracker = 1;
-    while(gameover !== true) {
-      Game.getInput();
+    //  This loop runs until the game is completed or the players quit
+    while(Game.gameover !== true) {
+      Game.getClientInput();
       Game.applyInput(Game.currentInput);
     }
     //  Function for dealing with a completed game
@@ -124,7 +124,7 @@ io.sockets.on('connection', (socket) => {
     socket.spectators = [Game.spectators];
   });
   spectators.on('leave-game', (socket) => {
-
+    // TODO
   });
 });
 

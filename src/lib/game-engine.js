@@ -4,6 +4,7 @@ import superagent from 'superagent';
 
 
 const Game = {
+  gameover: false,
   isThereTwoPlayers: false,
   players: 0,
   player1: {},
@@ -11,24 +12,33 @@ const Game = {
   spectators: [],
   playerTracker: 0,
   currentInput: '',
+  inputLog: [],
+  testGame: 0,
 
-  getInput: () => {
+  getClientInput: () => {
     if(this.playerTracker === 1) {  
       players.in(`player1`).emit('input-request');
       players.in('player1').on('input', (socket) => {
-        this.currentInput = socket;
+        this.currentInput = socket.toString();
         this.playerTracker = 2; 
       });
     }
     if(this.playerTracker === 2) {  
       players.in(`player2`).emit('input-request')
       players.in('player2').on('input', (socket) => {
-        this.currentInput = socket;
+        this.currentInput = socket.toString();
         this.playerTracker = 1; 
       });
     }
   },
 
+  applyInput: (input) => {
+    // The parameter is the input from the current player client.  Use this as the inputs for the game.
+    this.inputLog.push(input);
+    this.__game(input);
+  },
+
+  //  The first to join is player1, the next is player2, all others after that are spectators
   joinGame: (socket) => {
     if (this.players === 0 && this.isThereTwoPlayers === false) {
       this.player1 = {
@@ -56,12 +66,6 @@ const Game = {
       console.log('spectators: ', this.spectators);
       spectators.emit('spectate', this.spectators);  // Dunno if this'll work out, makes an array of all who join after the first two needed to start a game.
     }
-  },
-
-  applyInput: (input) => {
-    // The parameter is the input from the current player client.  Use this as the inputs for the game.
-    let allInputs;
-    allInputs.push(input);
   },
       
   // Takes the player1 and player2 objects in an array
@@ -119,6 +123,20 @@ const Game = {
     this.player1 = {};
     this.player2 = {};
     this.spectators = [];
+  },
+
+  ///////////////////////  GAME LOGIC  ///////////////////
+  __game: (input) => {
+    // Actual game logic goes here
+    // If we're lucky it can be easily modularized to other files
+    // All this is test stuff
+    console.log('playing the game...');
+    this.testGame++;
+    if(this.testGame === 2) {
+      this.player1.didIWin = false;
+      this.player2.didIWin = true;
+      this.gameover = true;
+    }
   },
 };
 

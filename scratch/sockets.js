@@ -15,6 +15,8 @@ socket.on('connected', (socket) => {
   socket.password = 'ppassword';
   socket.email = 'email';
 
+  /////////////////  SIGNIN / SIGNUP  ////////////////////
+
   socket.emit('sign-in', socket);
 
   socket.on('signing-in', 'User found, signing in...');
@@ -23,6 +25,8 @@ socket.on('connected', (socket) => {
     // Just needs to press enter or something to trigger
     socket.emit('sign-up-confirmed');
   });
+
+  /////////////////  JOINING A GAME  ////////////////////
 
   // These next two code blocks should function identiacally, separated for new or returning users
   socket.on('signed-in-newuser', `Account created for ${socket.username} and signed in!`, () => {
@@ -42,13 +46,19 @@ socket.on('connected', (socket) => {
     players.emit('play');
   });
 
+  /////////////////  PLAYING A GAME  ////////////////////
+
   players.on('input-request', () => {
-    //  Server is only listening for one player's input, even if both end some
+    //  Server is only listening for the current player's input, even if both send something
+    //  Client is propted to type something and hit enter
     socket.input = 'input';
-    //  emits 'input' event with input attached after pressing enter
+    //  should emit 'input' event with input attached after pressing enter
     players.emit('input', socket.input);
   });
 
+  /////////////////  OTHER FUNCTIONS  ////////////////////
+
+  // Gets a player's stats.  Currently need to be a player in a game to access
   players.emit('get-stats', socket.username, () => {
     players.on('stats', (stats) => {
       console.log(stats);
@@ -65,6 +75,8 @@ socket.on('connected', (socket) => {
 
   // spectators leaving the game
   spectators.emit('leave-game', socket.username);
+
+  // Ending the game
   socket.on('end', () => {
     // At this point all game session data is cleared and communication with the server ceases until a new 'start' emit
     // Use this to shut down the client or start a new game
