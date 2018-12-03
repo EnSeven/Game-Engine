@@ -9,16 +9,35 @@ const Game = {
   player1: {},
   player2: {},
   spectators: [],
+  playerTracker: 0,
+  currentInput: '',
 
-  joinGame: (player) => {
+  getInput: () => {
+    if(this.playerTracker === 1) {  
+      players.in(`player1`).emit('input-request');
+      players.in('player1').on('input', (socket) => {
+        this.currentInput = socket;
+        this.playerTracker = 2; 
+      });
+    }
+    if(this.playerTracker === 2) {  
+      players.in(`player2`).emit('input-request')
+      players.in('player2').on('input', (socket) => {
+        this.currentInput = socket;
+        this.playerTracker = 1; 
+      });
+    }
+  },
+
+  joinGame: (socket) => {
     if (this.players === 0 && this.isThereTwoPlayers === false) {
       this.player1 = {
         username: socket.username,
       };
       this.players++;
       console.log('Player One joined: ', this.player1.username);
-      players.join(`player${this.player1.username}`);
-      players.emit('joined-player1', this.player1.username);
+      players.join(`player${this.players}`);
+      players.emit('player1-joined', this.player1.username);
     }
     else if (this.players === 1 && this.isThereTwoPlayers === false) {
       this.player2 = {
@@ -27,8 +46,10 @@ const Game = {
       this.players++;
       console.log('Player Two joined: ', this.player2.username);
       players.join(`player${this.player1.username}`);
-      players.emit('joined-player2', this.player2.username);
-      console.log('Awaiting game start from client(s)...');
+      this.isThereTwoPlayers = true;
+      players.emit('player2-joined', this.player2.username);
+      io.emit('ready-to-play', 'Game ready to begin!');
+      // At this point waiting to hear 'play' emit from two clients
     }
     else if (this.isThereTwoPlayers === true) {
       this.spectators.push(JSON.stringify(socket.req.data).username.toString());
@@ -37,16 +58,16 @@ const Game = {
     }
   },
 
-  gameStuffHappens: (players) => {
-    console.log('playing the game... player two wins!');
-    players[0].didIWin = true;
-    players[1].didIWin = false;
+  applyInput: (input) => {
+    // The parameter is the input from the current player client.  Use this as the inputs for the game.
+    let allInputs;
+    allInputs.push(input);
   },
       
   // Takes the player1 and player2 objects in an array
   // Determines and notifies winner and loser, and posts stats to API server
-  determineWinner: (players) => {
-    players.forEach((player) => {
+  determineWinner: (bothPlayers) => {
+    bothPlayers.forEach((player) => {
       if(player.didIWin === true) {
         console.log(`${player.username} won, storing results...`);
         superagent.post(`${process.env.API_URL}/singlestat`)
