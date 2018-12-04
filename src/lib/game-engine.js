@@ -1,8 +1,5 @@
 'use strict';
 
-import superagent from 'superagent';
-
-
 const Game = {
   gameover: false,
   isThereTwoPlayers: false,

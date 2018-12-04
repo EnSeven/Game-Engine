@@ -23,7 +23,7 @@ io.sockets.on('connection', (socket) => {
     socket.emit('connected', `Player ID ${socket.id} connected`);
   });
   
-  // when someone disconnects6s6s
+  // when someone disconnects
   socket.on('disconnect', () => {
     socket.removeAllListeners();
     console.log(`${socket.username} has left the game`);
@@ -34,7 +34,7 @@ io.sockets.on('connection', (socket) => {
     let user = `'username' : ${socket.username.toString()}, 'password' : ${socket.password.toString()}, 'email' : ${socket.email.toString()}}`;
     superagent.get(`${process.env.API_URL}/playerstats/${user.username}`)
       .then(results => {
-        if (!results.name) {
+        if (results.length === 0) {
           socket.emit('confirm-sign-up');
           socket.on('sign-up-confirmed', () => {
             superagent.post(`${process.env.API_URL}/signup`)
@@ -43,7 +43,7 @@ io.sockets.on('connection', (socket) => {
               .then(data => {
                 user.auth = data.req.headers.auth;
                 socket.emit('signed-in-newuser', user.username);
-                console.log(`${socket.username} has signed up and signed in`);
+                console.log(`${user.username} has signed up and signed in`);
               })
               .catch(error => {
                 if (error) {
