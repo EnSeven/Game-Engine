@@ -39,8 +39,8 @@ io.sockets.on('connection', (socket) => {
       .set('Content-Type', 'application/json')
       .then(data => {
         userObj.auth = data.text;
-        socket.emit('signed-in-newuser', socket.username);
-        console.log(`${socket.username} has signed up and signed in`);
+        socket.emit('signed-in-newuser', userObj.username);
+        console.log(`${userObj.username} has signed up and signed in`);
       })
       .catch(error => {
         if (error) {
