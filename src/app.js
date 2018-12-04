@@ -75,6 +75,7 @@ io.sockets.on('connection', (socket) => {
   // After a client signs in, joins a new game.  Waits for two clients before starting the game
   // Expected input: (String) 'username'
   socket.on('join', (username) => {
+    console.log(username, ' joined');
     Game.joinGame(username);
   });
   
