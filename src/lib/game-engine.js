@@ -37,6 +37,7 @@ const Game = {
 
   //  The first to join is player1, the next is player2, all others after that are spectators
   joinGame: (socket) => {
+    console.log('testing');
     if (this.players === 0 && this.isThereTwoPlayers === false) {
       this.player1 = {
         username: socket,
