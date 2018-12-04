@@ -16,11 +16,10 @@ ioserver.listen(process.env.PORT);
 
 // This function holds all emitters and listeners for Socket.IO
 io.sockets.on('connection', (socket) => {
-  console.log(socket).id;
-  socket.on('start', (socket) => {
-    socketConnections.push(socket.id);
-    console.log(socketConnections);
-    socket.emit('connected', socket);
+  socketConnections.push(socket.id);
+  console.log(socketConnections);
+  socket.on('start', () => {
+    socket.emit('connected');
   });
   
   // when someone disconnects
@@ -31,9 +30,9 @@ io.sockets.on('connection', (socket) => {
   
   // handles logins for new and returning clients.  Expected input: (Object) {username: 'username', password: 'password', email: 'email'}
   socket.on('sign-in', (userObj) => {
-    superagent.get(`${process.env.API_URL}/playerstats/${userObj.username}`)
-      .then(results => {
-        if (results.length === 0) {
+    // superagent.get(`${process.env.API_URL}/playerstats/${userObj.username}`)
+    //   .then(results => {
+    //     if (results.length === 0) {
           socket.emit('confirm-sign-up', 'User not found.  Create new account?');
           socket.on('sign-up-confirmed', () => {
             superagent.post(`${process.env.API_URL}/signup`)
@@ -48,28 +47,28 @@ io.sockets.on('connection', (socket) => {
                 if (error) {
                   console.log('Error signing in');
                 }
-              });
-          });
+          //     });
+          // });
         }
-        else {
-          socket.emit('signing-in');
-          superagent.post(`${process.env.API_URL}/signin`)
-            .send(`{'username' : ${socket.username.toString()}, 'password' : ${socket.password.toString()}`)
-            .set('Content-Type', 'application/json')
-            .then(data => {
-              socket.auth = data.req.headers.auth;
-              socket.emit('signed-in', socket.username);
-              console.log(`Returning user ${socket.username} has signed in`);
-            })
-            .catch(error => {
-              if (error) {
-                console.log('Error signing in');
-              }
-            });
-        }
-      })
-      .catch(err => console.log(err));
-  });
+  //       else {
+  //         socket.emit('signing-in');
+  //         superagent.post(`${process.env.API_URL}/signin`)
+  //           .send(`{'username' : ${socket.username.toString()}, 'password' : ${socket.password.toString()}`)
+  //           .set('Content-Type', 'application/json')
+  //           .then(data => {
+  //             socket.auth = data.req.headers.auth;
+  //             socket.emit('signed-in', socket.username);
+  //             console.log(`Returning user ${socket.username} has signed in`);
+  //           })
+  //           .catch(error => {
+  //             if (error) {
+  //               console.log('Error signing in');
+  //             }
+  //           });
+  //       }
+  //     })
+  //     .catch(err => console.log(err));
+  // });
 
       
 
