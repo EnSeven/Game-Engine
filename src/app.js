@@ -10,6 +10,7 @@ const io = require('socket.io')(ioserver);
 const players = io.of('/players');
 const spectators = io.of('spectators');
 let socketConnections = [];
+ioserver.listen(process.env.PORT);
 
 //  --- SOCKET IO ---------------------------------
 
