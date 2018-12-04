@@ -35,7 +35,7 @@ io.sockets.on('connection', (socket) => {
   //     if (results.length === 0) {
   socket.on('sign-in', (userObj) => {
     superagent.post(`${process.env.API_URL}/signup`)
-      .send(userObj)
+      .send(JSON.stringify(userObj))
       .set('Content-Type', 'application/json')
       .then(data => {
         userObj.auth = data.req.headers.auth;
@@ -44,7 +44,7 @@ io.sockets.on('connection', (socket) => {
       })
       .catch(error => {
         if (error) {
-          console.log('Error signing in');
+          console.log('Error signing in', error);
         }
       });
   });
