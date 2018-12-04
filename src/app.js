@@ -29,27 +29,26 @@ io.sockets.on('connection', (socket) => {
   });
   
   // handles logins for new and returning clients.  Expected input: (Object) {username: 'username', password: 'password', email: 'email'}
+  // socket.on('sign-in', (userObj) => {
+  // superagent.get(`${process.env.API_URL}/playerstats/${userObj.username}`)
+  //   .then(results => {
+  //     if (results.length === 0) {
   socket.on('sign-in', (userObj) => {
-    // superagent.get(`${process.env.API_URL}/playerstats/${userObj.username}`)
-    //   .then(results => {
-    //     if (results.length === 0) {
-    socket.emit('confirm-sign-up', 'User not found.  Create new account?');
-    socket.on('sign-up-confirmed', () => {
-      superagent.post(`${process.env.API_URL}/signup`)
-        .send(userObj)
-        .set('Content-Type', 'application/json')
-        .then(data => {
-          userObj.auth = data.req.headers.auth;
-          socket.emit('signed-in-newuser', socket.username);
-          console.log(`${socket.username} has signed up and signed in`);
-        })
-        .catch(error => {
-          if (error) {
-            console.log('Error signing in');
-          }
-        });
-    });
+    superagent.post(`${process.env.API_URL}/signup`)
+      .send(userObj)
+      .set('Content-Type', 'application/json')
+      .then(data => {
+        userObj.auth = data.req.headers.auth;
+        socket.emit('signed-in-newuser', socket.username);
+        console.log(`${socket.username} has signed up and signed in`);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('Error signing in');
+        }
+      });
   });
+  // });
   //       else {
   //         socket.emit('signing-in');
   //         superagent.post(`${process.env.API_URL}/signin`)
