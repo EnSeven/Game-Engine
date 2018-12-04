@@ -15,12 +15,11 @@ let socketConnections = [];
 
 // This function holds all emitters and listeners for Socket.IO
 io.sockets.on('connection', (socket) => {
-  
-  socketConnections.push(socket);
-  
-  // when someone connects
-  socket.on('start', () => {
-    socket.emit('connected', `Player ID ${socket.id} connected`);
+  console.log(socket).id;
+  socket.on('start', (socket) => {
+    socketConnections.push(socket.id);
+    console.log(socketConnections);
+    socket.emit('connected', socket);
   });
   
   // when someone disconnects
@@ -30,20 +29,19 @@ io.sockets.on('connection', (socket) => {
   });
   
   // handles logins for new and returning clients.  Expected input: (Object) {username: 'username', password: 'password', email: 'email'}
-  socket.on('sign-in', (socket) => {
-    let user = `'username' : ${socket.username.toString()}, 'password' : ${socket.password.toString()}, 'email' : ${socket.email.toString()}}`;
-    superagent.get(`${process.env.API_URL}/playerstats/${user.username}`)
+  socket.on('sign-in', (userObj) => {
+    superagent.get(`${process.env.API_URL}/playerstats/${userObj.username}`)
       .then(results => {
         if (results.length === 0) {
-          socket.emit('confirm-sign-up');
+          socket.emit('confirm-sign-up', 'User not found.  Create new account?');
           socket.on('sign-up-confirmed', () => {
             superagent.post(`${process.env.API_URL}/signup`)
-              .send(user)
+              .send(userObj)
               .set('Content-Type', 'application/json')
               .then(data => {
-                user.auth = data.req.headers.auth;
-                socket.emit('signed-in-newuser', user.username);
-                console.log(`${user.username} has signed up and signed in`);
+                userObj.auth = data.req.headers.auth;
+                socket.emit('signed-in-newuser', socket.username);
+                console.log(`${socket.username} has signed up and signed in`);
               })
               .catch(error => {
                 if (error) {
@@ -55,7 +53,7 @@ io.sockets.on('connection', (socket) => {
         else {
           socket.emit('signing-in');
           superagent.post(`${process.env.API_URL}/signin`)
-            // .send(`{'username' : ${socket.username.toString()}, 'password' : ${socket.password.toString()}`)
+          .send(`{'username' : ${socket.username.toString()}, 'password' : ${socket.password.toString()}`)
             .set('Content-Type', 'application/json')
             .then(data => {
               socket.auth = data.req.headers.auth;
@@ -71,11 +69,14 @@ io.sockets.on('connection', (socket) => {
       })
       .catch(err => console.log(err));
   });
+
+      
+
   
   // After a client signs in, joins a new game.  Waits for two clients before starting the game
   // Expected input: (String) 'username'
-  socket.on('join', (socket) => {
-    Game.joinGame(socket);
+  socket.on('join', (username) => {
+    Game.joinGame(username);
   });
   
   //  Runs game related functions from game-engine.js
@@ -115,19 +116,22 @@ io.sockets.on('connection', (socket) => {
           .catch(err => console.log(err));
       });
   });
+
   // Listens for quit event from either client during play.  Will confirm the quit with both players
   players.on('quit-game', () => {
     Game.quit();
+    players.emit('end');
   });
-  spectators.broadcast.emit('watch-broadcast', (socket) => {  // Not focusing on this now, still need to figure out what to pass through
-    socket.players = [Game.player1.username, Game.player2.username];
-    socket.spectators = [Game.spectators];
-  });
-  spectators.on('leave-game', (socket) => {
-    // TODO
-  });
+// spectators.broadcast.emit('watch-broadcast', (socket) => {  
+// Not focusing on this now, still need to figure out what to pass through
+//   socket.players = [Game.player1.username, Game.player2.username];
+//   socket.spectators = [Game.spectators];
+// });
+// spectators.on('leave-game', (socket) => {
+//   // TODO
+// });
+// });
 });
-
 
 //  --- EXPORTS -----------------------------------
 

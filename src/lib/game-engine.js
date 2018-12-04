@@ -39,7 +39,7 @@ const Game = {
   joinGame: (socket) => {
     if (this.players === 0 && this.isThereTwoPlayers === false) {
       this.player1 = {
-        username: socket.username,
+        username: socket,
       };
       this.players++;
       console.log('Player One joined: ', this.player1.username);
@@ -48,7 +48,7 @@ const Game = {
     }
     else if (this.players === 1 && this.isThereTwoPlayers === false) {
       this.player2 = {
-        username: socket.username,
+        username: socket,
       };
       this.players++;
       console.log('Player Two joined: ', this.player2.username);
@@ -87,7 +87,7 @@ const Game = {
           .then(() => {
             console.log(`Results saved for ${player.username}`);
             player.didIWin = undefined;
-            players.in(`player${player.username}`).emit('won');
+            players.in(`player${player.username}`).emit('lost');
           })
           .catch(err => console.log(err));
       }
@@ -95,14 +95,13 @@ const Game = {
         console.log('Something went wrong determining the winner');
       }
     });
-    io.emit('gameover');
   },
 
   quit: () => {
     // get both players to send quit events 
     let quitCount = 0;
     players.emit('confirm-quit');
-    players.on('confirmed-quit', () => {
+    players.on('quit-confirmed', () => {
       quitCount++;
     });
     while(quitCount === 2) {

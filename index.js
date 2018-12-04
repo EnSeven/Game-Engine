@@ -6,4 +6,4 @@ require('dotenv').config();
 const start = require('./src/app.js');
 
 //  PORT defined in .env file
-start(4040);
+start(process.env.PORT);
