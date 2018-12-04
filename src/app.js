@@ -53,7 +53,7 @@ io.sockets.on('connection', (socket) => {
         else {
           socket.emit('signing-in');
           superagent.post(`${process.env.API_URL}/signin`)
-          .send(`{'username' : ${socket.username.toString()}, 'password' : ${socket.password.toString()}`)
+            .send(`{'username' : ${socket.username.toString()}, 'password' : ${socket.password.toString()}`)
             .set('Content-Type', 'application/json')
             .then(data => {
               socket.auth = data.req.headers.auth;
