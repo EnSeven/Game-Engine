@@ -10,7 +10,7 @@ const io = require('socket.io')(ioserver);
 const players = io.of('/players');
 const spectators = io.of('spectators');
 let socketConnections = [];
-ioserver.listen(process.env.PORT);
+// ioserver.listen(8080);
 
 //  --- SOCKET IO ---------------------------------
 
@@ -77,6 +77,7 @@ io.sockets.on('connection', (socket) => {
   socket.on('join', (username) => {
     console.log(username, ' joined');
     Game.joinGame(username);
+    socket.emit('player1-joined', username);
   });
   
   //  Runs game related functions from game-engine.js

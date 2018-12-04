@@ -13,56 +13,55 @@ const Game = {
   testGame: 0,
 
   getClientInput: () => {
-    if(this.playerTracker === 1) {  
+    if(Game.playerTracker === 1) {  
       players.in(`player1`).emit('input-request');
       players.in('player1').on('input', (socket) => {
-        this.currentInput = socket.toString();
-        this.playerTracker = 2; 
+        Game.currentInput = socket.toString();
+        Game.playerTracker = 2; 
       });
     }
-    if(this.playerTracker === 2) {  
+    if(Game.playerTracker === 2) {  
       players.in(`player2`).emit('input-request')
       players.in('player2').on('input', (socket) => {
-        this.currentInput = socket.toString();
-        this.playerTracker = 1; 
+        Game.currentInput = socket.toString();
+        Game.playerTracker = 1; 
       });
     }
   },
 
   applyInput: (input) => {
     // The parameter is the input from the current player client.  Use this as the inputs for the game.
-    this.inputLog.push(input);
-    this.__game(input);
+    Game.inputLog.push(input);
+    Game.__game(input);
   },
 
   //  The first to join is player1, the next is player2, all others after that are spectators
   joinGame: (socket) => {
-    console.log('testing');
-    if (this.players === 0 && this.isThereTwoPlayers === false) {
-      this.player1 = {
+    console.log('testing', Game.players);
+    if (Game.players === 0 && Game.isThereTwoPlayers === false) {
+      Game.player1 = {
         username: socket,
       };
-      this.players++;
-      console.log('Player One joined: ', this.player1.username);
-      players.join(`player${this.players}`);
-      players.emit('player1-joined', this.player1.username);
+      Game.players++;
+      console.log('Player One joined: ', Game.player1.username);
+      // socket.join(`player${Game.players}`);
     }
-    else if (this.players === 1 && this.isThereTwoPlayers === false) {
-      this.player2 = {
+    else if (Game.players === 1 && Game.isThereTwoPlayers === false) {
+      Game.player2 = {
         username: socket,
       };
-      this.players++;
-      console.log('Player Two joined: ', this.player2.username);
-      players.join(`player${this.player1.username}`);
-      this.isThereTwoPlayers = true;
-      players.emit('player2-joined', this.player2.username);
-      io.emit('ready-to-play', 'Game ready to begin!');
+      Game.players++;
+      console.log('Player Two joined: ', Game.player2.username);
+      // socket.join(`player${Game.player1.username}`);
+      Game.isThereTwoPlayers = true;
+      socket.emit('player2-joined', Game.player2.username);
+      // io.emit('ready-to-play', 'Game ready to begin!');
       // At this point waiting to hear 'play' emit from two clients
     }
-    else if (this.isThereTwoPlayers === true) {
-      this.spectators.push(JSON.stringify(socket.req.data).username.toString());
-      console.log('spectators: ', this.spectators);
-      spectators.emit('spectate', this.spectators);  // Dunno if this'll work out, makes an array of all who join after the first two needed to start a game.
+    else if (Game.isThereTwoPlayers === true) {
+      Game.spectators.push(JSON.stringify(socket.req.data).username.toString());
+      console.log('spectators: ', Game.spectators);
+      spectators.emit('spectate', Game.spectators);  // Dunno if this'll work out, makes an array of all who join after the first two needed to start a game.
     }
   },
       
@@ -77,7 +76,7 @@ const Game = {
           .then(() => {
             console.log(`Results saved for ${player.username}`);  
             player.didIWin = undefined;
-            players.in(`player${player.username}`).emit('won');
+            socket.in(`player${player.username}`).emit('won');
           })
           .catch(err => console.log(err));
       }
@@ -88,7 +87,7 @@ const Game = {
           .then(() => {
             console.log(`Results saved for ${player.username}`);
             player.didIWin = undefined;
-            players.in(`player${player.username}`).emit('lost');
+            socket.in(`player${player.username}`).emit('lost');
           })
           .catch(err => console.log(err));
       }
@@ -101,12 +100,12 @@ const Game = {
   quit: () => {
     // get both players to send quit events 
     let quitCount = 0;
-    players.emit('confirm-quit');
-    players.on('quit-confirmed', () => {
+    socket.emit('confirm-quit');
+    socket.on('quit-confirmed', () => {
       quitCount++;
     });
     while(quitCount === 2) {
-      this.endSession();
+      Game.endSession();
       io.emit('end');
       io.removeAllListeners();
       quitCount = 0;
@@ -115,11 +114,11 @@ const Game = {
 
   endSession: () => {
     //  Dump all session data
-    this.isThereTwoPlayers = false;
-    this.players = 0;
-    this.player1 = {};
-    this.player2 = {};
-    this.spectators = [];
+    Game.isThereTwoPlayers = false;
+    Game.players = 0;
+    Game.player1 = {};
+    Game.player2 = {};
+    Game.spectators = [];
   },
 
   ///////////////////////  GAME LOGIC  ///////////////////
@@ -128,11 +127,11 @@ const Game = {
     // If we're lucky it can be easily modularized to other files
     // All this is test stuff
     console.log('playing the game...');
-    this.testGame++;
-    if(this.testGame === 2) {
-      this.player1.didIWin = false;
-      this.player2.didIWin = true;
-      this.gameover = true;
+    Game.testGame++;
+    if(Game.testGame === 2) {
+      Game.player1.didIWin = false;
+      Game.player2.didIWin = true;
+      Game.gameover = true;
     }
   },
 };
