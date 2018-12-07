@@ -1,0 +1,28 @@
+{
+  "name": "enseven-word-wizard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EnSeven/Game-Engine"
+  },
+  "keywords": [],
+  "author": "enSeven with code base provided by Adnan Yousef",
+  "bin": {
+    "word-guess-cli": "./index.js"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattoattacko/word-wizard/bugs"
+  },
+  "homepage": "https://github.com/mattoattacko/word-wizard#readme",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "eslint": "^5.9.0",
+    "inquirer": "^6.2.0"
+  }
+}
