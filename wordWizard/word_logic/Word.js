@@ -11,22 +11,22 @@ function Word(correctWord, hint, category) {
     for (var a=0; a < correctWordArray.length; a++) {
       var newLetter = new Letter(correctWordArray[a]);
       this.letters.push(newLetter);
-    };
+    }
   };
 
   this.makeGuess = function(guess) {
     for (var b=0; b < this.letters.length; b++) {
       this.letters[b].check(guess);
-    };
+    }
   };
 
   this.update = function() {
-    var string = ''
+    var string = '';
     for (var c=0; c < this.letters.length; c++) {
       string += this.letters[c].returnCharacter();
-    };
+    }
     return string;
   };
-};
+}
 
 module.exports = Word;
