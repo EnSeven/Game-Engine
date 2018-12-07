@@ -20,19 +20,26 @@ let GameState = require('./GameState.js');
 // };
 
 
-let wordObject = getWord();
-wordObject.generateLetters();
-let guessesRemainingSetting = 3;
-let hint = '';
-const gameState = new GameState(wordObject, guessesRemainingSetting, hint);
+
 
 //TODO: get wrapped in function
-gameState.wordObject.generateLetters();
+function gameStateGenerator() {
+  let wordObject = getWord();
+  let guessesRemainingSetting = 3;
+  let hint = '';
+  const gameState = new GameState(wordObject, guessesRemainingSetting, hint);
+  
+  gameState.wordObject.generateLetters();
+  
+  return gameState;
+}
+
+let gameState = gameStateGenerator();
 
 function evaluateResponse(response) {
   if (response.confirm) {
     console.log(chalk.cyan('\nGreat! The Word Wizard is conjuring a new word...'));
-    main();
+    // main();
   } else {
     console.log(chalk.cyan('\nThe Word Wizard is displeased!\n'));
     return 'skip';
@@ -56,23 +63,23 @@ function endGame(outcome) {
 
   endGameLog(outcome);
 
-  gameState.wordObject = getWord();
-  gameState.wordObject.generateLetters();
-  gameState.guessesRemaining = guessesRemainingSetting;
-  gameState.guessesSoFar = [];
-  gameState.hint = '';
+  // gameState.wordObject = getWord();
+  // gameState.wordObject.generateLetters();
+  // gameState.guessesRemaining = gameState.guessesRemainingSetting;
+  // gameState.guessesSoFar = [];
+  // gameState.hint = '';
 
-  inquirer.prompt([
-    {
-      message: messages.replay,
-      name: 'confirm',
-      type:'confirm',
-    },
-  ]).then(function(response) {
-    if(evaluateResponse(response) == 'skip') {
-      return 'skip';
-    }
-  });
+  // inquirer.prompt([
+  //   {
+  //     message: messages.replay,
+  //     name: 'confirm',
+  //     type:'confirm',
+  //   },
+  // ]).then(function(response) {
+  //   if(evaluateResponse(response) == 'skip') {
+  //     return 'skip';
+  //   }
+  // });
 
 }
 
@@ -105,7 +112,7 @@ function handleInput(data, gameState, cb) {
     return;
   }
   // only called if validateUserInput is called with a function in addition to the data
-  if ( typeof cb === 'function' ) { cb(); }
+  if ( typeof cb === 'function' ) { cb(gameState); }
 }
 
 //TODO: get wrapped in function
@@ -128,4 +135,4 @@ const main = function() {
   ]).then( (data) => handleInput(data, gameState, main) );
 };
 
-module.exports = {main, handleInput, gameState};
+module.exports = {main, handleInput, gameStateGenerator};

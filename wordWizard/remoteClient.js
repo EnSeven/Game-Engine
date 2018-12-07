@@ -1,7 +1,7 @@
 'use strict';
-var chalk = require('chalk');
-var inquirer = require('inquirer');
-var wordWizard = require('./wordWizard.js');
+let chalk = require('chalk');
+let inquirer = require('inquirer');
+let wordWizard = require('./wordWizard.js');
 
 function promptInquirer(gameState) {
   inquirer.prompt([
@@ -18,8 +18,10 @@ function promptInquirer(gameState) {
     // data is an object which contains the player's guess, retrieved from prompt
     // gameState is the object tracking the word and guesses
     // promptInquirer passed as a callback
-  ]).then( (data) => wordWizard.handleInput(data, gameState, promptInquirer) );
+  ]).then( (data) => wordWizard.handleInput(data, gameState, promptInquirer(gameState)) );
 }
 
+let gameState = wordWizard.gameStateGenerator();
+promptInquirer(gameState);
 
-promptInquirer(wordWizard.gameState);
+module.exports = promptInquirer;
