@@ -1,8 +1,8 @@
 'use strict';
 var wordWizard = require('./wordWizard.js');
 
-function passInput(data, gameState, promptInquirer) {
-  wordWizard.handleInput(data, gameState, promptInquirer);
+function passInput(promptResults) {
+  wordWizard.handleInput(promptResults);
 }
 
 function retrieveGameState() {

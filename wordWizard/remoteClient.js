@@ -20,7 +20,14 @@ function promptInquirer(gameState) {
     // data is an object which contains the player's guess, retrieved from prompt
     // gameState is the object tracking the word and guesses
     // promptInquirer passed as a callback
-  ]).then( (data) => localServer.passInput(data, gameState, promptInquirer) )
+  ]).then( (data) => {
+    let promptResults = {
+      data: data,
+      gameState: gameState,
+      callBack: promptInquirer,
+    };
+    localServer.passInput(promptResults); 
+  })
     .catch((error) => {
       console.log(error);
     });
