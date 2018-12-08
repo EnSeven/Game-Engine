@@ -1,5 +1,5 @@
 'use strict';
 
-const wordWizard = require('./wordWizard.js');
+const remoteClient = require('./remoteClient.js');
 
-wordWizard.main();
+remoteClient.main();
