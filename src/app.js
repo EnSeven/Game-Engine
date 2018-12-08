@@ -15,17 +15,18 @@ let socketConnections = [];
 let getWord = require('../wordWizard/word_logic/getWord.js');
 
 
-let word = getWord();
-word.generateLetters();
-console.log(word);
+
 
 //  --- SOCKET IO ---------------------------------
-
+let word;
 // This function holds all emitters and listeners for Socket.IO
 io.sockets.on('connection', (socket) => {
   socketConnections.push(socket.id);
   console.log(socketConnections);
   socket.on('start', () => {
+    word = getWord();
+    word.generateLetters();
+    console.log(word);
     socket.emit('connected');
   });
   
@@ -33,6 +34,7 @@ io.sockets.on('connection', (socket) => {
   socket.on('disconnect', () => {
     socket.removeAllListeners();
     console.log(`${socket.id} has left the game`);
+    Game.endSession();
   });
   
   // handles logins for new and returning clients.  Expected input: (Object) {username: 'username', password: 'password', email: 'email'}
