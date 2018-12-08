@@ -6,10 +6,11 @@ let GameState = require('./GameState.js');
 
 //TODO: get wrapped in function
 function gameStateGenerator() {
+  let guess = '';
   let wordObject = getWord();
-  let guessesRemainingSetting = 3;
+  let guessesRemainingSetting = 5;
   let hint = '';
-  let gameState = new GameState(wordObject, guessesRemainingSetting, hint);
+  let gameState = new GameState(guess, wordObject, guessesRemainingSetting, hint);
   
   gameState.wordObject.generateLetters();
   

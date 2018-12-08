@@ -1,6 +1,6 @@
 'use strict';
 
-//  --- DEPENDANCIES ------------------------------
+//  --- DEPENDENCIES ------------------------------
 
 require('dotenv').config();
 const Game = require('./lib/game-engine.js');
@@ -8,8 +8,16 @@ const superagent = require('superagent');
 const ioserver = require('http').createServer(8080);
 const io = require('socket.io')(ioserver);
 let socketConnections = [];
+// const Word = require('../wordWizard/Word.js');
+// const wordWizard = require('../wordWizard/localServer.js');
+// const client = require('../wordWizard/remoteClient.js');
+// let GameState = require('../wordWizard/GameState.js');
+let getWord = require('../wordWizard/word_logic/getWord.js');
 
 
+let word = getWord();
+word.generateLetters();
+console.log(word);
 
 //  --- SOCKET IO ---------------------------------
 
@@ -92,27 +100,27 @@ io.sockets.on('connection', (socket) => {
   
   const getInput = () => {
     console.log('emitting input request');
-    socket.emit('input-request', output);
+    socket.emit('input-request', (word));
   };
-  let output;
   socket.on('play', () => {
+    // let gameState = wordWizard.gameStateGenerator();
+    // console.log(gameState);
     getInput();
   }); 
+  let string;
   socket.on('input', input => {
     if(Game.gameover === true) {
       __determineWinner(Game.player1);
       Game.endSession();
     }
     else if(Game.gameover === false) {
+
       console.log('applying input');
-      console.log(input.letter);
-      output = 'this is output from the game';
-      Game.testGame++;
-      console.log('Playing the game...', Game.testGame);
-      if(Game.testGame < 3) {
-        Game.player1.didIWin = true;
-        Game.gameover = true;
-      }
+      console.log(input);
+      word.makeGuess(input);
+      word.string = word.update();
+
+      // console.log(GameState);
       getInput();
     }
   });
