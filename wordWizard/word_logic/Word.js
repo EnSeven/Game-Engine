@@ -5,6 +5,7 @@ function Word(correctWord, hint, category) {
   this.category = category;
   this.hint = hint;
   this.letters = [];
+  this.count = 8;
 
   this.generateLetters = function() {
     var correctWordArray = this.correctWord.split('');

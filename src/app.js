@@ -18,15 +18,16 @@ let getWord = require('../wordWizard/word_logic/getWord.js');
 
 
 //  --- SOCKET IO ---------------------------------
-let word;
 // This function holds all emitters and listeners for Socket.IO
 io.sockets.on('connection', (socket) => {
+  let word;
   socketConnections.push(socket.id);
   console.log(socketConnections);
   socket.on('start', () => {
     word = getWord();
     word.generateLetters();
-    console.log(word);
+    
+    // console.log(word);
     socket.emit('connected');
   });
   
@@ -100,32 +101,50 @@ io.sockets.on('connection', (socket) => {
     }
   });
   
+  
+  let thisGuess;
   const getInput = () => {
-    console.log('emitting input request');
-    socket.emit('input-request', (word));
+    if (word.count === 0 ) {
+      console.log('Out of guesses, game over');
+      socket.emit('lost');
+      Game.player1.didIWin = false;
+      __determineWinner(Game.player1);
+      Game.endSession();
+    }
+    else {
+      if (thisGuess === word.string) {
+        word.count--;
+      }
+      console.log('emitting input request');
+      console.log('sending word object:', word);
+      socket.emit('input-request', (word));
+    }
   };
   socket.on('play', () => {
     // let gameState = wordWizard.gameStateGenerator();
     // console.log(gameState);
     getInput();
   }); 
-  let string;
   socket.on('input', input => {
-    if(Game.gameover === true) {
+    console.log('applying input');
+    console.log(input);
+    word.makeGuess(input);
+    thisGuess = word.string;
+    word.string = word.update();
+    console.log(word.correctWord.toUpperCase(), word.string);
+    if (word.string === word.correctWord.toUpperCase()) {
+      Game.player1.didIWin = true;
+      console.log('Game over');
+      socket.emit('won');
       __determineWinner(Game.player1);
       Game.endSession();
-    }
-    else if(Game.gameover === false) {
-
-      console.log('applying input');
-      console.log(input);
-      word.makeGuess(input);
-      word.string = word.update();
-
-      // console.log(GameState);
+    } 
+    else {
       getInput();
     }
+    // console.log(GameState);
   });
+  
   
   
   

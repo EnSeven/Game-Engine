@@ -43,8 +43,9 @@ function getWord(){
     word: allWords[rando2].word[rando1],
     hint: allWords[rando2].hint[rando1],
     category: allWords[rando2].category,
+    count: 8,
   };
-  return new Word(randomWord.word, randomWord.hint, randomWord.category); 
+  return new Word(randomWord.word, randomWord.hint, randomWord.category, randomWord.count); 
 }
 
 module.exports = getWord;
