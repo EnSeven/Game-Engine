@@ -33,22 +33,58 @@ function promptInquirer(gameState) {
     });
 }
 
-function evaluateResponse(response) {
-  if (response.confirm) {
-    console.log(chalk.cyan('\nGreat! The Word Wizard is conjuring a new word...'));
-    // main();
-  } else {
-    console.log(chalk.cyan('\nThe Word Wizard is displeased!\n'));
-    return;
-  }
+
+// -------- game beginning logic --------
+function requestGameState() {
+  return localServer.retrieveGameState();
 }
 
-function requestGameState() {
-  let gameState = localServer.retrieveGameState();
-  return gameState;
+function requestWelcomeMessage() {
+  return localServer.retrieveWelcomeMessage();
 }
+
+let welcomeMessage = requestWelcomeMessage();
+console.log(chalk.cyan(welcomeMessage));
 
 let gameState = requestGameState();
 promptInquirer(gameState);
+// --------------------------------------
 
 module.exports = promptInquirer, requestGameState;
+
+let functionsToEvaluate = {
+  // This would be run at the end of the game to check if the user wants to play again
+
+  // function resetGame(outcome, gameState) {
+  //   //the below code is for resetting the game and prompting for a replay
+  //   gameState.wordObject = getWord();
+  //   gameState.wordObject.generateLetters();
+  //   gameState.guessesRemaining = gameState.guessesRemainingSetting;
+  //   gameState.guessesSoFar = [];
+  //   gameState.hint = '';
+  
+  //   inquirer.prompt([
+  //     {
+  //       message: messages.replay,
+  //       name: 'confirm',
+  //       type:'confirm',
+  //     },
+  //   ]).then(function(response) {
+  //     if(evaluateResponse(response) == 'skip') {
+  //       return 'skip';
+  //     }
+  //   });
+  // }
+
+  // This would be called after the above
+
+  // function evaluateResetResponse(response) {
+  //   if (response.confirm) {
+  //     console.log(chalk.cyan('\nGreat! The Word Wizard is conjuring a new word...'));
+  //     // main();
+  //   } else {
+  //     console.log(chalk.cyan('\nThe Word Wizard is displeased!\n'));
+  //     return;
+  //   }
+  // }
+};
