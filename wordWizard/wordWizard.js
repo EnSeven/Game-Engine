@@ -70,7 +70,10 @@ function validateUserInput(guess, guessesSoFar) {
 }
 // Main game
 
-function handleInput(data, gameState, cb) {
+function handleInput(promptResults) {
+  let data = promptResults.data;
+  let gameState = promptResults.gameState;
+  let cb = promptResults.callBack;
 
   validateUserInput(data.guess, gameState.guessesSoFar);
   
