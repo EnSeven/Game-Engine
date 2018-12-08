@@ -1,7 +1,9 @@
 'use strict';
 let chalk = require('chalk');
 let inquirer = require('inquirer');
-let wordWizard = require('./wordWizard.js');
+
+// TODO: this variable and its use will be replaced with Socket.io
+let localServer = require('./localServer.js');
 
 function promptInquirer(gameState) {
   inquirer.prompt([
@@ -18,10 +20,28 @@ function promptInquirer(gameState) {
     // data is an object which contains the player's guess, retrieved from prompt
     // gameState is the object tracking the word and guesses
     // promptInquirer passed as a callback
-  ]).then( (data) => wordWizard.handleInput(data, gameState, promptInquirer(gameState)) );
+  ]).then( (data) => localServer.passInput(data, gameState, promptInquirer) )
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
-let gameState = wordWizard.gameStateGenerator();
+function evaluateResponse(response) {
+  if (response.confirm) {
+    console.log(chalk.cyan('\nGreat! The Word Wizard is conjuring a new word...'));
+    // main();
+  } else {
+    console.log(chalk.cyan('\nThe Word Wizard is displeased!\n'));
+    return;
+  }
+}
+
+function requestGameState() {
+  let gameState = localServer.retrieveGameState();
+  return gameState;
+}
+
+let gameState = requestGameState();
 promptInquirer(gameState);
 
-module.exports = promptInquirer;
+module.exports = promptInquirer, requestGameState;
