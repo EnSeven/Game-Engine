@@ -1,26 +1,8 @@
 #!/usr/bin/env node
-var chalk = require('chalk');
-var inquirer = require('inquirer');
+let chalk = require('chalk');
 let getWord = require('./word_logic/getWord.js');
 let messages = require('./messages.js');
-let localServer = require('./localServer.js');
 let GameState = require('./GameState.js');
-
-
-
-// var guessesRemaining = guessesRemainingSetting;
-// // var guessesSoFar = [];
-// // let hint = '';
-
-// const gameState = {
-//   wordObject: getWord(),
-//   guessesRemaining: guessesRemainingSetting,
-//   guessesSoFar: [],
-//   hint: '',
-// };
-
-
-
 
 //TODO: get wrapped in function
 function gameStateGenerator() {
@@ -33,10 +15,6 @@ function gameStateGenerator() {
   
   return gameState;
 }
-
-// let gameState = gameStateGenerator();
-
-
 
 // called in endGame, below
 function endGameLog(outcome, gameState) {
@@ -55,23 +33,26 @@ function endGame(outcome, gameState) {
 
   endGameLog(outcome, gameState);
 
-  // gameState.wordObject = getWord();
-  // gameState.wordObject.generateLetters();
-  // gameState.guessesRemaining = gameState.guessesRemainingSetting;
-  // gameState.guessesSoFar = [];
-  // gameState.hint = '';
+  //the below code is for resetting the game and prompting for a replay
+  /* 
+  gameState.wordObject = getWord();
+  gameState.wordObject.generateLetters();
+  gameState.guessesRemaining = gameState.guessesRemainingSetting;
+  gameState.guessesSoFar = [];
+  gameState.hint = '';
 
-  // inquirer.prompt([
-  //   {
-  //     message: messages.replay,
-  //     name: 'confirm',
-  //     type:'confirm',
-  //   },
-  // ]).then(function(response) {
-  //   if(evaluateResponse(response) == 'skip') {
-  //     return 'skip';
-  //   }
-  // });
+  inquirer.prompt([
+    {
+      message: messages.replay,
+      name: 'confirm',
+      type:'confirm',
+    },
+  ]).then(function(response) {
+    if(evaluateResponse(response) == 'skip') {
+      return 'skip';
+    }
+  });
+  */
 
 }
 function validateUserInput(guess, guessesSoFar) {
@@ -89,7 +70,6 @@ function validateUserInput(guess, guessesSoFar) {
 }
 // Main game
 
-// export this
 function handleInput(data, gameState, cb) {
 
   validateUserInput(data.guess, gameState.guessesSoFar);

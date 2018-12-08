@@ -1,7 +1,6 @@
 'use strict';
 let chalk = require('chalk');
 let inquirer = require('inquirer');
-// let wordWizard = require('./wordWizard.js');
 
 // TODO: this variable and its use will be replaced with Socket.io
 let localServer = require('./localServer.js');
@@ -42,8 +41,7 @@ function requestGameState() {
   return gameState;
 }
 
-
 let gameState = requestGameState();
 promptInquirer(gameState);
 
-module.exports = promptInquirer;
+module.exports = promptInquirer, requestGameState;
