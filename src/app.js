@@ -121,8 +121,6 @@ io.sockets.on('connection', (socket) => {
     }
   };
   socket.on('play', () => {
-    // let gameState = wordWizard.gameStateGenerator();
-    // console.log(gameState);
     getInput();
   }); 
   socket.on('input', input => {
@@ -197,7 +195,8 @@ io.sockets.on('connection', (socket) => {
   };
 });
 
-
+let socket;
+let gameObject;
 //  --- EXPORTS -----------------------------------
 
 const start = (port) => {
