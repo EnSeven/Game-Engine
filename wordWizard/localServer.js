@@ -6,8 +6,11 @@ function passInput(promptResults) {
 }
 
 function retrieveGameState() {
-  let gameState = wordWizard.gameStateGenerator();
-  return gameState;
+  return wordWizard.gameStateGenerator();
 }
 
-module.exports = {passInput, retrieveGameState};
+function retrieveWelcomeMessage() {
+  return wordWizard.provideWelcomeMessage();
+}
+
+module.exports = {passInput, retrieveGameState, retrieveWelcomeMessage};

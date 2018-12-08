@@ -16,7 +16,10 @@ function gameStateGenerator() {
   return gameState;
 }
 
-// called in endGame, below
+// -------- logic for outgoing data --------
+
+// displays messages to indicate game outcome
+// called in handleInput, under "logic for incoming data"
 function endGameLog(outcome, gameState) {
   if (outcome === 'winner') {
     console.log(chalk.blue.bold('\nPraise the Word Wizard! You have won!'));
@@ -27,48 +30,26 @@ function endGameLog(outcome, gameState) {
   }
 }
 
-// Reset function
-// called in handleInput, below
-function endGame(outcome, gameState) {
-
-  endGameLog(outcome, gameState);
-
-  //the below code is for resetting the game and prompting for a replay
-  /* 
-  gameState.wordObject = getWord();
-  gameState.wordObject.generateLetters();
-  gameState.guessesRemaining = gameState.guessesRemainingSetting;
-  gameState.guessesSoFar = [];
-  gameState.hint = '';
-
-  inquirer.prompt([
-    {
-      message: messages.replay,
-      name: 'confirm',
-      type:'confirm',
-    },
-  ]).then(function(response) {
-    if(evaluateResponse(response) == 'skip') {
-      return 'skip';
-    }
-  });
-  */
-
-}
+// checks to make sure the input is correctly formatted
 function validateUserInput(guess, guessesSoFar) {
-  // Validate user input
   if (guess === '') {
     console.log(chalk.bgRed.white('\nWHOOPS!') + chalk.yellow(' You did not enter a letter.'));
-    return; //wordWizard();
+    return;
   } else if (guess.length > 1) {
     console.log(chalk.bgRed.white('\nWHOOPS!') + chalk.yellow(' One letter at a time, friend...'));
-    return; //wordWizard();
+    return;
   } else if (guessesSoFar.includes(guess)) {
     console.log(chalk.bgRed.white('\nWHOOPS!') + chalk.yellow(' You already guessed that! Choose another letter.'));
-    return; //wordWizard();
+    return;
   }
 }
-// Main game
+
+function provideWelcomeMessage() {
+  return messages.welcomeMessage;
+}
+// --------------------------------------
+
+// -------- logic for incoming data --------
 
 function handleInput(promptResults) {
   let data = promptResults.data;
@@ -87,39 +68,19 @@ function handleInput(promptResults) {
     gameState.wordObject.letters[i].check(data.guess);
   }
   if (gameState.wordObject.update().toLowerCase() == gameState.wordObject.correctWord.toLowerCase()) {
-    endGame('winner', gameState);
+    endGameLog('winner', gameState);
     return;
   }
   if (gameState.guessesRemaining < 6) {
     gameState.hint = gameState.wordObject.hint;
   }
   if (gameState.guessesRemaining == 0) {
-    endGame('loss', gameState);
+    endGameLog('loss', gameState);
     return;
   }
   // only called if validateUserInput is called with a function in addition to the data
   if ( typeof cb === 'function' ) { cb(gameState); }
 }
+// --------------------------------------
 
-//TODO: get wrapped in function
-console.log('relocate the console log generating this and the next message');
-console.log(chalk.cyan(messages.welcomeMessage));
-
-// remove the below?
-// main provided for local testing with ./index.js
-// const main = function() {
-//   inquirer.prompt([
-//     {
-//       name: 'guess',
-//       prefix: '',
-//       message: '\nWord: ' + chalk.cyanBright(gameState.wordObject.update()) +
-//         '\n\nIncorrect guesses remaining: ' + chalk.magenta.bold(gameState.guessesRemaining) +
-//         '\nGuesses so far: ' + chalk.magenta.bold(gameState.guessesSoFar.join(' ')) + '\n' +
-//         '\nCategory: ' + chalk.yellow(gameState.wordObject.category) + '\n' +
-//         '\nHint: ' + chalk.red(gameState.hint) + '\n' +
-//         'Guess a letter:',
-//     },
-//   ]).then( (data) => handleInput(data, gameState, main) );
-// };
-
-module.exports = {handleInput, validateUserInput, gameStateGenerator};
+module.exports = {handleInput, validateUserInput, gameStateGenerator, provideWelcomeMessage};
