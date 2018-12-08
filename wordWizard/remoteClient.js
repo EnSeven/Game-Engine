@@ -18,7 +18,7 @@ function promptInquirer(gameState) {
     // data is an object which contains the player's guess, retrieved from prompt
     // gameState is the object tracking the word and guesses
     // promptInquirer passed as a callback
-  ]).then( (data) => wordWizard.handleInput(data, gameState, promptInquirer(gameState)) );
+  ]).then( (data) => wordWizard.handleInput(data, gameState, promptInquirer) );
 }
 
 let gameState = wordWizard.gameStateGenerator();
