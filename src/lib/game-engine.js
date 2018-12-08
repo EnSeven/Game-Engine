@@ -1,5 +1,6 @@
 'use strict';
 
+
 const Game = {
   gameover: false,
   isThereTwoPlayers: false,
@@ -15,9 +16,13 @@ const Game = {
   applyInput: (input) => {
     // The parameter is the input from the current player client.  Use this as the inputs for the game.
     Game.inputLog.push(input);
-    console.log('playing the game...', input);
-    Game.player1.didIWin = true;
-    Game.gameover = true;
+    console.log(input);
+    Game.testGame++;
+    console.log('Playing the game...', Game.testGame);
+    if(Game.testGame > 3) {
+      Game.player1.didIWin === true;
+      Game.gameover = true;
+    }
   },
       
   endSession: () => {

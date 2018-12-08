@@ -7,11 +7,9 @@ const Game = require('./lib/game-engine.js');
 const superagent = require('superagent');
 const ioserver = require('http').createServer(8080);
 const io = require('socket.io')(ioserver);
-const players = io.of('/players');
-const spectators = io.of('spectators');
 let socketConnections = [];
-// ioserver.listen(8080);
-let playCount = 0;
+
+
 
 //  --- SOCKET IO ---------------------------------
 
@@ -37,7 +35,7 @@ io.sockets.on('connection', (socket) => {
       .then(data => {
         userObj.auth = data.text;
         socket.emit('signed-in-user', userObj);
-        console.log(`${userObj.username} has signed up and signed in`);
+        console.log(`Returning user ${userObj.username} has signed in`);
       })
       .catch(error => {
         console.log('Error signing in', error);
@@ -92,19 +90,34 @@ io.sockets.on('connection', (socket) => {
     }
   });
   
-  //  Runs game related functions from game-engine.js
-  // wait for both players before starting
+  const getInput = () => {
+    console.log('emitting input request');
+    socket.emit('input-request', output);
+  };
+  let output;
   socket.on('play', () => {
-    console.log(Game.gameover);
-    socket.emit('input-request');
-    socket.on('input', input => {
-      Game.applyInput(input);
-      console.log('input received,', input);
-      socket.emit('results', 'player1 results');
+    getInput();
+  }); 
+  socket.on('input', input => {
+    if(Game.gameover === true) {
       __determineWinner(Game.player1);
       Game.endSession();
-    });
+    }
+    else if(Game.gameover === false) {
+      console.log('applying input');
+      console.log(input.letter);
+      output = 'this is output from the game';
+      Game.testGame++;
+      console.log('Playing the game...', Game.testGame);
+      if(Game.testGame < 3) {
+        Game.player1.didIWin = true;
+        Game.gameover = true;
+      }
+      getInput();
+    }
   });
+  
+  
   
   // Listens for quit event from either client during play.  Will confirm the quit with both players
   socket.on('quit-game', () => {
@@ -120,12 +133,12 @@ io.sockets.on('connection', (socket) => {
       socket.removeAllListeners();
       quitCount = 0;
     }
-    players.emit('end');
+    socket.emit('end');
   });
   
   const __determineWinner = (player) => {
     console.log(player);
-    if(player.didIWin === true) {
+    if(Game.player1.didIWin === true) {
       console.log(`${player.username} won, storing results...`);
       superagent.post(`${process.env.API_URL}/api/v1/singlestat`)
         .send({name: player.username, win: player.didIWin})
@@ -137,7 +150,7 @@ io.sockets.on('connection', (socket) => {
         })
         .catch(err => console.log(err));
     }
-    else if(player.didIWin === false) {
+    else if(Game.player1.didIWin === false) {
       console.log(`${player.username} lost, storing results...`);
       superagent.post(`${process.env.API_URL}/api/v1/singlestat`)
         .send({name: player.username, win: player.didIWin})
@@ -150,10 +163,9 @@ io.sockets.on('connection', (socket) => {
         .catch(err => console.log('3'));
     }
     else {
-      console.log('Something went wrong determining the winner');
+      console.log('Something went wrong determining the winner:', player);
     }
   };
-  
 });
 
 
